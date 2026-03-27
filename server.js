@@ -79,29 +79,39 @@ app.post('/api/upload', upload.array('files'), async (req, res) => {
   analysisError = null;
 
   try {
-    const filePaths = req.files.map(file => file.path);
-    console.log(`Analyzing ${filePaths.length} files...`);
-
-    const results = await analyzeExcelFiles(filePaths);
+    // Get newly uploaded file paths
+    const newFilePaths = req.files.map(file => file.path);
     
-    // Save results
+    // Get existing uploaded files to combine with new ones
+    let allFilePaths = [...newFilePaths];
+    
+    // Include existing uploaded files
+    if (fs.existsSync('uploads')) {
+      const existingFiles = fs.readdirSync('uploads')
+        .filter(f => f.endsWith('.xlsx') || f.endsWith('.xls') || f.endsWith('.csv'))
+        .map(f => path.join('uploads', f));
+      allFilePaths = [...new Set([...allFilePaths, ...existingFiles])];
+    }
+    
+    // Always include default file if it exists (your 150 base records)
+    if (fs.existsSync('My tickets JFMM.xlsx')) {
+      allFilePaths.unshift('My tickets JFMM.xlsx');
+    }
+    
+    console.log(`Analyzing ${allFilePaths.length} file(s) total (including base file and previous uploads)...`);
+
+    const results = await analyzeExcelFiles(allFilePaths);
+    
+    // Save combined results
     fs.writeFileSync('dashboard-results.json', JSON.stringify(results, null, 2));
     
-    // Cleanup uploaded files
-    filePaths.forEach(filePath => {
-      try {
-        fs.unlinkSync(filePath);
-      } catch (err) {
-        console.error(`Failed to delete ${filePath}:`, err.message);
-      }
-    });
-
+    // Keep uploaded files in uploads folder for future refreshes and accumulation
     lastAnalysisTime = new Date().toISOString();
     analysisInProgress = false;
     
     res.json({
       success: true,
-      message: `Analyzed ${results.totalTickets} tickets from ${results.sourceFiles.length} file(s)`,
+      message: `Analyzed ${results.totalTickets} total tickets from ${results.sourceFiles.length} file(s)`,
       data: results
     });
   } catch (error) {
@@ -122,20 +132,20 @@ app.post('/api/refresh', async (req, res) => {
   analysisError = null;
 
   try {
-    // Get list of Excel files to analyze (prioritize uploaded files, then default file)
+    // Get list of Excel files to analyze (combine default file + uploaded files)
     let filePaths = [];
     
-    // Check for files in uploads directory
-    if (fs.existsSync('uploads')) {
-      const uploadedFiles = fs.readdirSync('uploads')
-        .filter(f => f.endsWith('.xlsx') || f.endsWith('.xls'))
-        .map(f => path.join('uploads', f));
-      filePaths = uploadedFiles;
+    // Always include default file if it exists (your 150 base records)
+    if (fs.existsSync('My tickets JFMM.xlsx')) {
+      filePaths.push('My tickets JFMM.xlsx');
     }
     
-    // If no uploaded files, use default file
-    if (filePaths.length === 0 && fs.existsSync('My tickets JFMM.xlsx')) {
-      filePaths = ['My tickets JFMM.xlsx'];
+    // Also include any uploaded files (for accumulation)
+    if (fs.existsSync('uploads')) {
+      const uploadedFiles = fs.readdirSync('uploads')
+        .filter(f => f.endsWith('.xlsx') || f.endsWith('.xls') || f.endsWith('.csv'))
+        .map(f => path.join('uploads', f));
+      filePaths = [...filePaths, ...uploadedFiles];
     }
 
     if (filePaths.length === 0) {

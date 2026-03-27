@@ -24,6 +24,31 @@ function getCellMinutes(val) {
   return convertTimeToMinutes(val);
 }
 
+// Function to remove duplicate rows based on all column values
+function removeDuplicates(data) {
+  const seen = new Set();
+  const uniqueData = [];
+  let duplicatesRemoved = 0;
+
+  data.forEach(row => {
+    // Create a signature/hash of the entire row for comparison
+    const rowSignature = JSON.stringify(row);
+    
+    if (!seen.has(rowSignature)) {
+      seen.add(rowSignature);
+      uniqueData.push(row);
+    } else {
+      duplicatesRemoved++;
+    }
+  });
+
+  if (duplicatesRemoved > 0) {
+    console.log(`Removed ${duplicatesRemoved} duplicate rows. Unique records: ${uniqueData.length}`);
+  }
+
+  return uniqueData;
+}
+
 // Read CSV file
 async function readCSVFile(filePath) {
   return new Promise((resolve, reject) => {
@@ -113,13 +138,17 @@ async function analyzeExcelFiles(filePaths) {
   const data = allData;
   console.log(`Total rows from all files: ${data.length}`);
 
-  // Process the combined data
+  // Remove duplicate rows
+  const uniqueData = removeDuplicates(data);
+  const deduplicatedData = uniqueData;
+
+  // Process the deduplicated data
   let totalFRT = 0;
   let totalResolutionTime = 0;
   let count = 0;
   let resolutionCount = 0;
 
-  data.forEach(row => {
+  deduplicatedData.forEach(row => {
     const rawFrtMins = row['First response time (in mins)'];
     const rawFrtHrs = row['First response time (in hrs)'];
     const rawResHrs = row['Resolution time (in hrs)'];
@@ -155,7 +184,7 @@ async function analyzeExcelFiles(filePaths) {
   let slaResolutionViolated = 0;
   let slaResolutionTotal = 0;
 
-  data.forEach(row => {
+  deduplicatedData.forEach(row => {
     const status = row['Status'];
     const agent = row['Agent'];
     const priority = row['Priority'];
@@ -180,7 +209,7 @@ async function analyzeExcelFiles(filePaths) {
 
   // Build results object
   const results = {
-    totalTickets: data.length,
+    totalTickets: deduplicatedData.length,
     ticketsWithFRT: count,
     averageFRT: count > 0 ? parseFloat((totalFRT / count).toFixed(2)) : 0,
     averageResolutionTime: resolutionCount > 0 ? parseFloat((totalResolutionTime / resolutionCount).toFixed(2)) : 0,
@@ -197,7 +226,7 @@ async function analyzeExcelFiles(filePaths) {
     },
     averageResponseTime: (function() {
       let totalInteractions = 0, totalResTimeForResp = 0;
-      data.forEach(row => {
+      deduplicatedData.forEach(row => {
         const agentInt = parseInt(row['Agent interactions']) || 0;
         const resMin = convertTimeToMinutes(row['Resolution time (in hrs)']);
         const resMin1 = convertTimeToMinutes(row['Resolution time (in hrs)_1']);
@@ -211,7 +240,7 @@ async function analyzeExcelFiles(filePaths) {
     })(),
     csatScore: (function() {
       let csatSum = 0, csatCount = 0;
-      data.forEach(row => {
+      deduplicatedData.forEach(row => {
         const v = parseFloat(row['CSAT Rating']);
         if (v > 0) { csatSum += v; csatCount++; }
       });
@@ -228,7 +257,7 @@ async function analyzeExcelFiles(filePaths) {
 
   // Merchant/CSM mapping
   const merchantCSMSet = {};
-  data.forEach(row => {
+  deduplicatedData.forEach(row => {
     const merchant = row['Merchant'];
     const csm = row['CSM'];
     if (merchant) {
@@ -245,7 +274,7 @@ async function analyzeExcelFiles(filePaths) {
 
   // Agent-specific data
   const agentData = {};
-  data.forEach(row => {
+  deduplicatedData.forEach(row => {
     const agent = row['Agent'];
     if (!agent) return;
     
@@ -304,7 +333,7 @@ async function analyzeExcelFiles(filePaths) {
     
     let agentFRTMet = 0, agentFRTViolated = 0, agentFRTTotal = 0;
     let agentResMet = 0, agentResViolated = 0, agentResTotal = 0;
-    data.forEach(row => {
+    deduplicatedData.forEach(row => {
       if (row['Agent'] === agent) {
         const frtStatus = row['First response status'];
         if (frtStatus) {
@@ -328,7 +357,7 @@ async function analyzeExcelFiles(filePaths) {
     agent_info.slaFRTTotal = agentFRTTotal;
     agent_info.slaResolutionTotal = agentResTotal;
 
-    const agentRows = data.filter(r => r['Agent'] === agent);
+    const agentRows = deduplicatedData.filter(r => r['Agent'] === agent);
 
     // Weekly volume
     const agentWeekly = {};
@@ -395,12 +424,12 @@ async function analyzeExcelFiles(filePaths) {
   results.agentData = agentData;
   
   // Resolved percentage
-  const closedTickets = data.filter(row => row['Status'] === 'Closed').length;
-  results.resolvedPercentage = ((closedTickets / data.length) * 100).toFixed(1);
+  const closedTickets = deduplicatedData.filter(row => row['Status'] === 'Closed').length;
+  results.resolvedPercentage = ((closedTickets / deduplicatedData.length) * 100).toFixed(1);
   
   // Weekly ticket volume
   const weeklyData = {};
-  data.forEach(row => {
+  deduplicatedData.forEach(row => {
     const createdTime = row['Created time'];
     if (createdTime) {
       let dateStr = createdTime;
@@ -429,7 +458,7 @@ async function analyzeExcelFiles(filePaths) {
   
   // Top categories
   const categoryData = {};
-  data.forEach(row => {
+  deduplicatedData.forEach(row => {
     const category = row['Type'];
     if (category && category.trim()) {
       categoryData[category] = (categoryData[category] || 0) + 1;
