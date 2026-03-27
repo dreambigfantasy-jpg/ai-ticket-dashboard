@@ -1,0 +1,280 @@
+{
+  "totalTickets": 150,
+  "ticketsWithFRT": 81,
+  "averageFRT": 29.47,
+  "averageResolutionTime": 992.18,
+  "statusBreakdown": {
+    "Closed": 149,
+    "Waiting on merchant's response": 1
+  },
+  "topAgents": [
+    [
+      "Amit Adhikary",
+      150
+    ]
+  ],
+  "priorityBreakdown": {
+    "Low": 136,
+    "High": 13,
+    "Medium": 1
+  },
+  "slaCompliance": {
+    "frtTotal": 83,
+    "frtMet": 81,
+    "frtPercentage": 97.6,
+    "resolutionTotal": 149,
+    "resolutionMet": 145,
+    "resolutionPercentage": 97.3
+  },
+  "averageResponseTime": 524.89,
+  "csatScore": {
+    "average": null,
+    "count": 0
+  },
+  "slaBreaches": {
+    "frt": 2,
+    "resolution": 4,
+    "total": 6
+  },
+  "sourceFiles": [
+    "My tickets JFMM.xlsx"
+  ],
+  "lastUpdated": "2026-03-27T08:15:22.636Z",
+  "merchantCSM": {
+    "Others": "Aqib, Rishabh, Rishabh Sarkar",
+    "3 AM": "Not Assigned",
+    "Stayclassy": "Not Assigned"
+  },
+  "agentData": {
+    "Amit Adhikary": {
+      "totalTickets": 150,
+      "totalFRT": 2386.966666666667,
+      "ticketsWithFRT": 81,
+      "totalResolutionTime": 143866.66666666663,
+      "statusBreakdown": {
+        "Closed": 149,
+        "Waiting on merchant's response": 1
+      },
+      "priorityBreakdown": {
+        "Low": 136,
+        "High": 13,
+        "Medium": 1
+      },
+      "csat": [],
+      "ticketsWithResolution": 145,
+      "averageFRT": 29.468724279835396,
+      "averageResolutionTime": 992.1839080459768,
+      "averageCSAT": "N/A",
+      "slaFRTPercentage": "97.6",
+      "slaResolutionPercentage": "97.3",
+      "slaFRTMet": 81,
+      "slaResolutionMet": 145,
+      "slaFRTTotal": 83,
+      "slaResolutionTotal": 149,
+      "weeklyTicketVolume": [
+        {
+          "week": "2025-12-28",
+          "count": 2
+        },
+        {
+          "week": "2026-01-04",
+          "count": 16
+        },
+        {
+          "week": "2026-01-11",
+          "count": 7
+        },
+        {
+          "week": "2026-01-18",
+          "count": 10
+        },
+        {
+          "week": "2026-01-25",
+          "count": 18
+        },
+        {
+          "week": "2026-02-01",
+          "count": 13
+        },
+        {
+          "week": "2026-02-08",
+          "count": 13
+        },
+        {
+          "week": "2026-02-15",
+          "count": 10
+        },
+        {
+          "week": "2026-02-22",
+          "count": 23
+        },
+        {
+          "week": "2026-03-01",
+          "count": 8
+        },
+        {
+          "week": "2026-03-08",
+          "count": 12
+        },
+        {
+          "week": "2026-03-15",
+          "count": 9
+        },
+        {
+          "week": "2026-03-22",
+          "count": 9
+        }
+      ],
+      "topCategories": [
+        [
+          "SPAM",
+          56
+        ],
+        [
+          "Store Setup/Config Changes",
+          32
+        ],
+        [
+          "Report an issue/bug",
+          18
+        ],
+        [
+          "WooCommerce Related",
+          12
+        ],
+        [
+          "MERGE",
+          10
+        ],
+        [
+          "Order Toubleshooting",
+          7
+        ],
+        [
+          "Others",
+          5
+        ],
+        [
+          "Technical code Queries",
+          1
+        ],
+        [
+          "Pricing/Billing query",
+          1
+        ],
+        [
+          "Checkout Sales Enquiry",
+          1
+        ]
+      ],
+      "resolvedPercentage": "99.3",
+      "averageResponseTime": 524.89,
+      "csatScore": {
+        "average": null,
+        "count": 0
+      },
+      "slaBreaches": {
+        "frt": 2,
+        "resolution": 4,
+        "total": 6
+      }
+    }
+  },
+  "resolvedPercentage": "99.3",
+  "weeklyTicketVolume": [
+    {
+      "week": "2025-12-28",
+      "count": 2
+    },
+    {
+      "week": "2026-01-04",
+      "count": 16
+    },
+    {
+      "week": "2026-01-11",
+      "count": 7
+    },
+    {
+      "week": "2026-01-18",
+      "count": 10
+    },
+    {
+      "week": "2026-01-25",
+      "count": 18
+    },
+    {
+      "week": "2026-02-01",
+      "count": 13
+    },
+    {
+      "week": "2026-02-08",
+      "count": 13
+    },
+    {
+      "week": "2026-02-15",
+      "count": 10
+    },
+    {
+      "week": "2026-02-22",
+      "count": 23
+    },
+    {
+      "week": "2026-03-01",
+      "count": 8
+    },
+    {
+      "week": "2026-03-08",
+      "count": 12
+    },
+    {
+      "week": "2026-03-15",
+      "count": 9
+    },
+    {
+      "week": "2026-03-22",
+      "count": 9
+    }
+  ],
+  "topCategories": [
+    [
+      "SPAM",
+      56
+    ],
+    [
+      "Store Setup/Config Changes",
+      32
+    ],
+    [
+      "Report an issue/bug",
+      18
+    ],
+    [
+      "WooCommerce Related",
+      12
+    ],
+    [
+      "MERGE",
+      10
+    ],
+    [
+      "Order Toubleshooting",
+      7
+    ],
+    [
+      "Others",
+      5
+    ],
+    [
+      "Technical code Queries",
+      1
+    ],
+    [
+      "Pricing/Billing query",
+      1
+    ],
+    [
+      "Checkout Sales Enquiry",
+      1
+    ]
+  ]
+}

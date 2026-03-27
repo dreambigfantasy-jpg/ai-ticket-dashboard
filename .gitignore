@@ -1,0 +1,14 @@
+node_modules/
+uploads/
+dashboard-results.json
+.DS_Store
+*.log
+.vscode/
+.idea/
+dist/
+build/
+*.swp
+*.swo
+*~
+.env
+.env.local

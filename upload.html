@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Ticket Data - AI Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            background: #f8f9fa;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-area:hover {
+            background: #e8ebf5;
+            border-color: #764ba2;
+        }
+        
+        .upload-area.dragover {
+            background: #e8ebf5;
+            border-color: #28a745;
+            transform: scale(1.02);
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .upload-text {
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .upload-subtext {
+            color: #666;
+            font-size: 12px;
+        }
+        
+        #fileInput {
+            display: none;
+        }
+        
+        .file-list {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .file-list.show {
+            display: block;
+        }
+        
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .file-item:last-child {
+            border-bottom: none;
+        }
+        
+        .file-name {
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .file-size {
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .remove-btn {
+            color: #dc3545;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .remove-btn:hover {
+            text-decoration: underline;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-upload {
+            background: #667eea;
+            color: white;
+            flex: 1;
+        }
+        
+        .btn-upload:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-upload:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-back {
+            background: #e0e0e0;
+            color: #333;
+            flex: 1;
+        }
+        
+        .btn-back:hover {
+            background: #d0d0d0;
+        }
+        
+        .status-message {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .status-message.show {
+            display: block;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .features {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .features h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .feature-list {
+            list-style: none;
+        }
+        
+        .feature-list li {
+            padding: 5px 0;
+            color: #666;
+            font-size: 13px;
+        }
+        
+        .feature-list li:before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📤 Upload Ticket Data</h1>
+        <p class="subtitle">Upload Excel or CSV files to update your dashboard with new data</p>
+        
+        <div id="statusMessage" class="status-message"></div>
+        
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">📁</div>
+            <div class="upload-text">Click to select or drag & drop files</div>
+            <div class="upload-subtext">Supports Excel (.xlsx, .xls) and CSV (.csv) formats</div>
+        </div>
+        
+        <input type="file" id="fileInput" multiple accept=".xlsx,.xls,.csv" />
+        
+        <div class="file-list" id="fileList"></div>
+        
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <div class="loading-text">Analyzing your data...</div>
+        </div>
+        
+        <div class="buttons">
+            <button class="btn-upload" id="uploadBtn" onclick="uploadFiles()">Upload & Analyze</button>
+            <button class="btn-back" onclick="window.location.href = '/'">Back to Dashboard</button>
+        </div>
+        
+        <div class="features">
+            <h3>✨ Features</h3>
+            <ul class="feature-list">
+                <li>Upload multiple Excel or CSV files at once</li>
+                <li>Automatic data analysis and metrics calculation</li>
+                <li>Real-time dashboard updates</li>
+                <li>Support for large datasets</li>
+                <li>Preserves all historical data</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        let selectedFiles = [];
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileListEl = document.getElementById('fileList');
+        const uploadBtn = document.getElementById('uploadBtn');
+        
+        // File selection
+        uploadArea.addEventListener('click', () => fileInput.click());
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+        
+        function handleFiles(files) {
+            selectedFiles = Array.from(files).filter(f => {
+                return f.name.endsWith('.xlsx') || f.name.endsWith('.xls') || f.name.endsWith('.csv');
+            });
+            
+            if (selectedFiles.length === 0) {
+                showStatus('Please select valid files (.xlsx, .xls, or .csv)', 'error');
+                return;
+            }
+            
+            updateFileList();
+            uploadBtn.disabled = false;
+        }
+        
+        function updateFileList() {
+            if (selectedFiles.length === 0) {
+                fileListEl.classList.remove('show');
+                return;
+            }
+            
+            let html = '<div style="margin-bottom: 10px; color: #333; font-weight: bold;">Selected Files:</div>';
+            selectedFiles.forEach((file, index) => {
+                const size = (file.size / 1024).toFixed(2);
+                html += `
+                    <div class="file-item">
+                        <div>
+                            <div class="file-name">📄 ${file.name}</div>
+                            <div class="file-size">${size} KB</div>
+                        </div>
+                        <span class="remove-btn" onclick="removeFile(${index})">Remove</span>
+                    </div>
+                `;
+            });
+            
+            fileListEl.innerHTML = html;
+            fileListEl.classList.add('show');
+        }
+        
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            updateFileList();
+            if (selectedFiles.length === 0) {
+                uploadBtn.disabled = true;
+            }
+        }
+        
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = `status-message show ${type}`;
+            setTimeout(() => {
+                statusEl.classList.remove('show');
+            }, 5000);
+        }
+        
+        async function uploadFiles() {
+            if (selectedFiles.length === 0) {
+                showStatus('Please select at least one file', 'error');
+                return;
+            }
+            
+            uploadBtn.disabled = true;
+            document.getElementById('loading').classList.add('show');
+            
+            const formData = new FormData();
+            selectedFiles.forEach(file => {
+                formData.append('files', file);
+            });
+            
+            try {
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showStatus(`✓ Success! ${result.message}`, 'success');
+                    selectedFiles = [];
+                    updateFileList();
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 2000);
+                } else {
+                    showStatus(`✗ Error: ${result.error}`, 'error');
+                    uploadBtn.disabled = false;
+                }
+            } catch (error) {
+                showStatus(`✗ Upload failed: ${error.message}`, 'error');
+                uploadBtn.disabled = false;
+            } finally {
+                document.getElementById('loading').classList.remove('show');
+            }
+        }
+        
+        uploadBtn.disabled = true;
+    </script>
+</body>
+</html>
