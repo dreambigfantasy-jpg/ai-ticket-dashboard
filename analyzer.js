@@ -76,8 +76,16 @@ async function analyzeExcelFiles(filePaths) {
   for (const filePath of filePaths) {
     try {
       let data = [];
-      const ext = path.extname(filePath).toLowerCase();
-      
+      let ext = path.extname(filePath).toLowerCase();
+
+      // If file has no extension (e.g. old upload path format), attempt to infer from content
+      if (!ext) {
+        const lowerPath = filePath.toLowerCase();
+        if (lowerPath.endsWith('.csv')) ext = '.csv';
+        else if (lowerPath.endsWith('.xlsx')) ext = '.xlsx';
+        else if (lowerPath.endsWith('.xls')) ext = '.xls';
+      }
+
       if (ext === '.csv') {
         data = await readCSVFile(filePath);
         console.log(`Processed CSV file ${filePath}: ${data.length} rows`);
@@ -85,7 +93,13 @@ async function analyzeExcelFiles(filePaths) {
         data = await readExcelFile(filePath);
         console.log(`Processed Excel file ${filePath}: ${data.length} rows`);
       } else {
-        throw new Error(`Unsupported file format: ${ext}`);
+        // For safety, try to parse as Excel before failing
+        try {
+          data = await readExcelFile(filePath);
+          console.log(`Processed Excel file (fallback) ${filePath}: ${data.length} rows`);
+        } catch (innerErr) {
+          throw new Error(`Unsupported file format: ${ext || 'none'}`);
+        }
       }
 
       allData = allData.concat(data);

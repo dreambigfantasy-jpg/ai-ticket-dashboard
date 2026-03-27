@@ -5,11 +5,22 @@ const multer = require('multer');
 const { analyzeExcelFiles } = require('./analyzer');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-// Configure multer for file uploads
+// Configure multer for file uploads with extension preservation
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    const safeName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
+    cb(null, safeName);
+  }
+});
+
 const upload = multer({ 
-  dest: 'uploads/',
+  storage,
   fileFilter: (req, file, cb) => {
     const csvMime = 'text/csv';
     const excelMimes = [
@@ -17,9 +28,9 @@ const upload = multer({
       'application/vnd.ms-excel'
     ];
     const isExcel = excelMimes.includes(file.mimetype) || 
-                    file.originalname.endsWith('.xlsx') || 
-                    file.originalname.endsWith('.xls');
-    const isCSV = file.mimetype === csvMime || file.originalname.endsWith('.csv');
+                    file.originalname.toLowerCase().endsWith('.xlsx') || 
+                    file.originalname.toLowerCase().endsWith('.xls');
+    const isCSV = file.mimetype === csvMime || file.originalname.toLowerCase().endsWith('.csv');
     
     if (isExcel || isCSV) {
       cb(null, true);
@@ -213,7 +224,17 @@ app.get('/api/agent-dashboard', (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`AI Ticket Dashboard running at http://localhost:${PORT}`);
   console.log(`Upload files at http://localhost:${PORT}/upload.html`);
+});
+
+server.on('error', err => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use. Try another port with PORT=<port> npm start.`);
+    process.exit(1);
+  } else {
+    console.error('Server error:', err);
+    process.exit(1);
+  }
 });
